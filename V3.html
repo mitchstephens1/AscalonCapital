@@ -83,7 +83,7 @@
                         </div>
                     </div>
                     <!-- ADDED: Manual Base Fee Input Field -->
-                    <div id="manualBaseFeeContainer" class="hidden">
+                    <div>
                         <label for="manualBaseFee" class="block text-sm font-medium text-gray-700 mb-1">Manual Base Fee</label>
                         <div class="input-group">
                             <input type="number" id="manualBaseFee" step="0.01" value="0.10" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
@@ -493,12 +493,20 @@
         }
         
         function setFeeModeUI(mode) {
+            const manualInput = DOMElements.inputs.manualBaseFee;
+            const manualInputContainer = manualInput.parentElement; // Get the div with the % sign
+
             if (mode === 'manual') {
                 DOMElements.toggles.feeMode.checked = false;
-                DOMElements.containers.manualBaseFee.classList.remove('hidden');
+                manualInput.disabled = false;
+                manualInput.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                manualInputContainer.classList.remove('opacity-50');
+
             } else { // tiered
                 DOMElements.toggles.feeMode.checked = true;
-                DOMElements.containers.manualBaseFee.classList.add('hidden');
+                manualInput.disabled = true;
+                manualInput.classList.add('bg-gray-100', 'cursor-not-allowed');
+                manualInputContainer.classList.add('opacity-50');
             }
         }
 
