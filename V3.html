@@ -495,12 +495,10 @@
             config.growthCompoundingYears = parseFloat(DOMElements.admin.settings.growthYears.value) || defaultConfig.growthCompoundingYears;
             
             config.feeTiers = [
-                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier1FUA.value)) || 0, fee: parseFloat(DOMElements.admin.settings.tier1Fee.value) || 0 },
-                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier2FUA.value)) || 0, fee: parseFloat(DOMElements.admin.settings.tier2Fee.value) || 0 },
-                { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || 0 }
+                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier1FUA.value)) || defaultConfig.feeTiers[0].fuaUpTo, fee: parseFloat(DOMElements.admin.settings.tier1Fee.value) || defaultConfig.feeTiers[0].fee },
+                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier2FUA.value)) || defaultConfig.feeTiers[1].fuaUpTo, fee: parseFloat(DOMElements.admin.settings.tier2Fee.value) || defaultConfig.feeTiers[1].fee },
+                { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || defaultConfig.feeTiers[2].fee }
             ];
-            
-            config.feeTiers.sort((a, b) => a.fuaUpTo - b.fuaUpTo);
 
             localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
             calculateAndDisplay();
