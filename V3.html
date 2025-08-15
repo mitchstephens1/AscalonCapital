@@ -599,7 +599,7 @@
             }
         }
         
-        function setupChart() {
+       function setupChart() {
             const ctx = DOMElements.chart.canvas.getContext('2d');
             feeChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -612,7 +612,16 @@
                              ticks: { callback: (value) => formatPercent(value) }
                         }
                     },
-                    plugins: { tooltip: { callbacks: { label: (context) => `Required Fee: ${formatPercent(context.raw)}` } } }
+                    plugins: { 
+                        // ADD THIS LEGEND OBJECT
+                        legend: {
+                            labels: {
+                                boxHeight: 8, // Makes the legend box shorter, creating a pill shape
+                                borderRadius: 4, // This rounds the corners
+                            }
+                        },
+                        tooltip: { callbacks: { label: (context) => `Required Fee: ${formatPercent(context.raw)}` } } 
+                    }
                 }
             });
         }
