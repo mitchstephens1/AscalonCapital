@@ -180,7 +180,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="h-80">
+                <div class="h-50">
                     <canvas id="feeChart"></canvas>
                 </div>
             </div>
@@ -512,13 +512,6 @@
             if (saved) {
                 const parsed = JSON.parse(saved);
                 config = { ...defaultConfig, ...parsed };
-                
-                // BUG FIX: Check for old data format (decimal instead of %) and normalize it.
-                if (config.feeTiers && config.feeTiers.length > 0 && config.feeTiers[0].fee < 1) {
-                    config.feeTiers.forEach(tier => {
-                        tier.fee = tier.fee * 100;
-                    });
-                }
                 
                 // BUG FIX: Handle 'Infinity' which becomes 'null' after JSON.parse
                 if (config.feeTiers && Array.isArray(config.feeTiers)) {
