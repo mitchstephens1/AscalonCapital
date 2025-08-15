@@ -613,11 +613,12 @@
                         }
                     },
                     plugins: { 
-                        // ADD THIS LEGEND OBJECT
                         legend: {
                             labels: {
-                                boxHeight: 8, // Makes the legend box shorter, creating a pill shape
-                                borderRadius: 4, // This rounds the corners
+                                usePointStyle: true, // This is the key property
+                                pointStyle: 'rectRounded', // This specifies the rounded rectangle shape
+                                boxWidth: 12, // You can adjust the width
+                                boxHeight: 8, // and height for the desired look
                             }
                         },
                         tooltip: { callbacks: { label: (context) => `Required Fee: ${formatPercent(context.raw)}` } } 
