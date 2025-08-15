@@ -180,7 +180,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="h-96">
+                <div class="h-80">
                     <canvas id="feeChart"></canvas>
                 </div>
             </div>
@@ -311,7 +311,7 @@
             chartTarget: 'targetRevenue',
             feeMode: 'tiered', // 'tiered' or 'manual'
             includeACE: true,
-            manualBaseFee: 0.001,
+            manualBaseFee: 0.1, // Stored as 0.1 for 0.1%
             feeTiers: [
                 { fuaUpTo: 50_000_000, fee: 0.12 },
                 { fuaUpTo: 250_000_000, fee: 0.10 },
@@ -500,7 +500,6 @@
                 { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || 0 }
             ];
             
-            // BUG FIX: Always sort tiers by FUA on save to prevent calculation errors.
             config.feeTiers.sort((a, b) => a.fuaUpTo - b.fuaUpTo);
 
             localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
@@ -526,7 +525,7 @@
             DOMElements.admin.settings.tier2FUA.value = formatNumberWithCommas(config.feeTiers[1].fuaUpTo);
             DOMElements.admin.settings.tier2Fee.value = config.feeTiers[1].fee;
             DOMElements.admin.settings.tier3Fee.value = config.feeTiers[2].fee;
-            DOMElements.inputs.manualBaseFee.value = config.manualBaseFee * 100;
+            DOMElements.inputs.manualBaseFee.value = config.manualBaseFee;
             setFeeModeUI(config.feeMode);
             setAceUI(config.includeACE);
         }
