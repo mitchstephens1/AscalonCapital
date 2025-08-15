@@ -599,7 +599,7 @@
             }
         }
         
-       function setupChart() {
+        function setupChart() {
             const ctx = DOMElements.chart.canvas.getContext('2d');
             feeChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -617,8 +617,8 @@
                             labels: {
                                 usePointStyle: true, // This is the key property
                                 pointStyle: 'rectRounded', // This specifies the rounded rectangle shape
-                                boxWidth: 12, // You can adjust the width
-                                boxHeight: 8, // and height for the desired look
+                                boxWidth: 1000, // You can adjust the width
+                                boxHeight: 30, // and height for the desired look
                             }
                         },
                         tooltip: { callbacks: { label: (context) => `Required Fee: ${formatPercent(context.raw)}` } } 
