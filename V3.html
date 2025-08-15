@@ -180,7 +180,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="h-50">
+                <div class="h-80">
                     <canvas id="feeChart"></canvas>
                 </div>
             </div>
@@ -409,7 +409,9 @@
             let revenue = 0;
             let remainingFUA = fua;
             let lastTierBoundary = 0;
-            for (const tier of config.feeTiers) {
+            // Create a sorted copy for calculation only, leaving the original config array untouched.
+            const sortedTiers = [...config.feeTiers].sort((a, b) => a.fuaUpTo - b.fuaUpTo);
+            for (const tier of sortedTiers) {
                 if (remainingFUA <= 0) break;
                 const tierBracketSize = tier.fuaUpTo - lastTierBoundary;
                 const fuaInThisTier = Math.min(remainingFUA, tierBracketSize);
@@ -495,11 +497,11 @@
             config.growthCompoundingYears = parseFloat(DOMElements.admin.settings.growthYears.value) || defaultConfig.growthCompoundingYears;
             
             config.feeTiers = [
-                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier1FUA.value)) || defaultConfig.feeTiers[0].fuaUpTo, fee: parseFloat(DOMElements.admin.settings.tier1Fee.value) || defaultConfig.feeTiers[0].fee },
-                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier2FUA.value)) || defaultConfig.feeTiers[1].fuaUpTo, fee: parseFloat(DOMElements.admin.settings.tier2Fee.value) || defaultConfig.feeTiers[1].fee },
-                { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || defaultConfig.feeTiers[2].fee }
+                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier1FUA.value)) || 0, fee: parseFloat(DOMElements.admin.settings.tier1Fee.value) || 0 },
+                { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier2FUA.value)) || 0, fee: parseFloat(DOMElements.admin.settings.tier2Fee.value) || 0 },
+                { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || 0 }
             ];
-
+            
             localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
             calculateAndDisplay();
             closeModal(DOMElements.admin.settings.modal);
@@ -511,18 +513,35 @@
                 const parsed = JSON.parse(saved);
                 config = { ...defaultConfig, ...parsed };
                 
-                // BUG FIX: Always sort tiers after loading to prevent calculation errors from unsorted saved data.
-                if (config.feeTiers && config.feeTiers.length > 0) {
-                    config.feeTiers.sort((a, b) => a.fuaUpTo - b.fuaUpTo);
+                // BUG FIX: Check for old data format (decimal instead of %) and normalize it.
+                if (config.feeTiers && config.feeTiers.length > 0 && config.feeTiers[0].fee < 1) {
+                    config.feeTiers.forEach(tier => {
+                        tier.fee = tier.fee * 100;
+                    });
+                }
+                
+                // BUG FIX: Handle 'Infinity' which becomes 'null' after JSON.parse
+                if (config.feeTiers && Array.isArray(config.feeTiers)) {
+                    config.feeTiers.forEach(tier => {
+                        if (tier.fuaUpTo === null) {
+                            tier.fuaUpTo = Infinity;
+                        }
+                    });
+                } else {
+                    config.feeTiers = defaultConfig.feeTiers;
                 }
             }
             DOMElements.admin.settings.chartTarget.value = config.chartTarget;
             DOMElements.admin.settings.growthYears.value = config.growthCompoundingYears;
-            DOMElements.admin.settings.tier1FUA.value = formatNumberWithCommas(config.feeTiers[0].fuaUpTo);
-            DOMElements.admin.settings.tier1Fee.value = config.feeTiers[0].fee;
-            DOMElements.admin.settings.tier2FUA.value = formatNumberWithCommas(config.feeTiers[1].fuaUpTo);
-            DOMElements.admin.settings.tier2Fee.value = config.feeTiers[1].fee;
-            DOMElements.admin.settings.tier3Fee.value = config.feeTiers[2].fee;
+            
+            // BUG FIX: Sort the tiers before displaying them to ensure correct order
+            const sortedTiers = [...config.feeTiers].sort((a, b) => a.fuaUpTo - b.fuaUpTo);
+            DOMElements.admin.settings.tier1FUA.value = formatNumberWithCommas(sortedTiers[0].fuaUpTo);
+            DOMElements.admin.settings.tier1Fee.value = sortedTiers[0].fee;
+            DOMElements.admin.settings.tier2FUA.value = formatNumberWithCommas(sortedTiers[1].fuaUpTo);
+            DOMElements.admin.settings.tier2Fee.value = sortedTiers[1].fee;
+            DOMElements.admin.settings.tier3Fee.value = sortedTiers[2].fee;
+            
             DOMElements.inputs.manualBaseFee.value = config.manualBaseFee;
             setFeeModeUI(config.feeMode);
             setAceUI(config.includeACE);
