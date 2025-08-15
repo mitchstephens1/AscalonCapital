@@ -509,8 +509,8 @@
                 const parsed = JSON.parse(saved);
                 config = { ...defaultConfig, ...parsed };
                 
-                // BUG FIX: Check for old data format and normalize it.
-                if (config.feeTiers && config.feeTiers.length > 0 && config.feeTiers[0].fee < 0.01) {
+                // BUG FIX: Check for old data format (decimal instead of %) and normalize it.
+                if (config.feeTiers && config.feeTiers.length > 0 && config.feeTiers[0].fee < 1) {
                     config.feeTiers.forEach(tier => {
                         tier.fee = tier.fee * 100;
                     });
