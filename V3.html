@@ -180,7 +180,7 @@
                         </label>
                     </div>
                 </div>
-                <div>
+                <div class="h-96">
                     <canvas id="feeChart"></canvas>
                 </div>
             </div>
@@ -313,9 +313,9 @@
             includeACE: true,
             manualBaseFee: 0.001,
             feeTiers: [
-                { fuaUpTo: 50_000_000, fee: 0.0012 },
-                { fuaUpTo: 250_000_000, fee: 0.0010 },
-                { fuaUpTo: Infinity, fee: 0.0008 }
+                { fuaUpTo: 50_000_000, fee: 0.12 },
+                { fuaUpTo: 250_000_000, fee: 0.10 },
+                { fuaUpTo: Infinity, fee: 0.08 }
             ]
         };
         let config = { ...defaultConfig };
@@ -493,11 +493,16 @@
             }
             config.chartTarget = DOMElements.admin.settings.chartTarget.value;
             config.growthCompoundingYears = parseFloat(DOMElements.admin.settings.growthYears.value) || defaultConfig.growthCompoundingYears;
+            
             config.feeTiers = [
                 { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier1FUA.value)) || 0, fee: parseFloat(DOMElements.admin.settings.tier1Fee.value) || 0 },
                 { fuaUpTo: parseFloat(cleanNumberString(DOMElements.admin.settings.tier2FUA.value)) || 0, fee: parseFloat(DOMElements.admin.settings.tier2Fee.value) || 0 },
                 { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || 0 }
             ];
+            
+            // BUG FIX: Always sort tiers by FUA on save to prevent calculation errors.
+            config.feeTiers.sort((a, b) => a.fuaUpTo - b.fuaUpTo);
+
             localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
             calculateAndDisplay();
             closeModal(DOMElements.admin.settings.modal);
@@ -509,11 +514,9 @@
                 const parsed = JSON.parse(saved);
                 config = { ...defaultConfig, ...parsed };
                 
-                // BUG FIX: Check for old data format (decimal instead of %) and normalize it.
-                if (config.feeTiers && config.feeTiers.length > 0 && config.feeTiers[0].fee < 1) {
-                    config.feeTiers.forEach(tier => {
-                        tier.fee = tier.fee * 100;
-                    });
+                // BUG FIX: Always sort tiers after loading to prevent calculation errors from unsorted saved data.
+                if (config.feeTiers && config.feeTiers.length > 0) {
+                    config.feeTiers.sort((a, b) => a.fuaUpTo - b.fuaUpTo);
                 }
             }
             DOMElements.admin.settings.chartTarget.value = config.chartTarget;
