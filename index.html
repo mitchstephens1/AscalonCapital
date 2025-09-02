@@ -295,11 +295,11 @@
             growthCompoundingYears: 2,
             feeMode: 'tiered', // 'tiered' or 'manual'
             includeACE: true,
-            manualBaseFee: 0.1, // Stored as 0.1 for 0.1%
+            manualBaseFee: 0.15, // Stored as 0.1 for 0.1%
             feeTiers: [
-                { fuaUpTo: 50_000_000, fee: 0.12 },
-                { fuaUpTo: 250_000_000, fee: 0.10 },
-                { fuaUpTo: Infinity, fee: 0.08 }
+                { fuaUpTo: 50_000_000, fee: 0.15 },
+                { fuaUpTo: 250_000_000, fee: 0.15 },
+                { fuaUpTo: Infinity, fee: 0.15 }
             ]
         };
         let config = { ...defaultConfig };
