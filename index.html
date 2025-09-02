@@ -108,36 +108,36 @@
                             <div id="aceFeeContainer">
                                 <label for="aceFee" class="block text-sm font-medium text-gray-700 mb-1">ACE Fee</label>
                                 <div class="input-group">
-                                    <input type="number" id="aceFee" step="0.01" value="0.38" class="w-full p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                                    <span class="input-group-text input-group-text-right">%</span>
+                                     <input type="number" id="aceFee" step="0.01" value="0.38" class="w-full p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                     <span class="input-group-text input-group-text-right">%</span>
                                 </div>
                             </div>
                             <div id="aceWeightContainer">
                                 <label for="aceWeight" class="block text-sm font-medium text-gray-700 mb-1">ACE Weight</label>
                                 <div class="input-group">
-                                    <input type="number" id="aceWeight" value="10" class="w-full p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                                    <span class="input-group-text input-group-text-right">%</span>
+                                     <input type="number" id="aceWeight" value="10" class="w-full p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                                     <span class="input-group-text input-group-text-right">%</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t pt-6">
-                         <div>
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 border-t pt-6">
+                        <div>
                              <label for="minRevenue" class="block text-sm font-medium text-gray-700 mb-1">Min Revenue</label>
                              <div class="input-group">
                                  <span class="input-group-text input-group-text-left">$</span>
                                  <input type="text" id="minRevenue" value="300,000" inputmode="numeric" class="w-full p-2 border border-gray-300 rounded-r-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                              </div>
-                         </div>
-                         <div>
+                        </div>
+                        <div>
                              <label for="targetRevenue" class="block text-sm font-medium text-gray-700 mb-1">Target Revenue</label>
                              <div class="input-group">
                                  <span class="input-group-text input-group-text-left">$</span>
                                  <input type="text" id="targetRevenue" value="500,000" inputmode="numeric" class="w-full p-2 border border-gray-300 rounded-r-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                              </div>
-                         </div>
-                     </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -199,7 +199,7 @@
                             <tr id="guidance-row-40" class="transition-colors duration-300"><td class="px-6 py-4 font-medium text-gray-900">Multi Platform, No Model Portfolios, Co-Op Model</td><td class="px-6 py-4 text-right font-semibold">40%</td></tr>
                         </tbody>
                     </table>
-                </div>
+                 </div>
             </div>
         </main>
     </div>
@@ -241,7 +241,7 @@
                             <input type="number" step="0.01" id="tier2-fee" class="w-full p-2 border border-gray-300 rounded-md text-sm">
                         </div>
                     </div>
-                      <div class="grid grid-cols-2 gap-4 items-end">
+                     <div class="grid grid-cols-2 gap-4 items-end">
                         <div>
                             <label class="block text-xs font-medium text-gray-600">Tier 3: FUA above prev.</label>
                              <input type="text" disabled value="And above" class="w-full p-2 border bg-gray-100 border-gray-300 rounded-md text-sm">
@@ -288,7 +288,6 @@
     </div></div>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-
         const defaultConfig = {
             password: "admin",
             warningThreshold: 250000,
@@ -491,31 +490,17 @@
                 { fuaUpTo: Infinity, fee: parseFloat(DOMElements.admin.settings.tier3Fee.value) || 0 }
             ];
             
-            localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
+            // This is the key change: REMOVED localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
             calculateAndDisplay();
             closeModal(DOMElements.admin.settings.modal);
         }
 
         function loadSettings() {
-            const saved = localStorage.getItem('ascalonFeeCalcSettings');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                config = { ...defaultConfig, ...parsed };
-                
-                // BUG FIX: Handle 'Infinity' which becomes 'null' after JSON.parse
-                if (config.feeTiers && Array.isArray(config.feeTiers)) {
-                    config.feeTiers.forEach(tier => {
-                        if (tier.fuaUpTo === null) {
-                            tier.fuaUpTo = Infinity;
-                        }
-                    });
-                } else {
-                    config.feeTiers = defaultConfig.feeTiers;
-                }
-            }
+            // This is the key change: REMOVED localStorage.getItem('ascalonFeeCalcSettings');
+            // settings are now loaded from the defaultConfig object and not saved/retrieved from the browser
+            
             DOMElements.admin.settings.growthYears.value = config.growthCompoundingYears;
             
-            // BUG FIX: Sort the tiers before displaying them to ensure correct order
             const sortedTiers = [...config.feeTiers].sort((a, b) => a.fuaUpTo - b.fuaUpTo);
             DOMElements.admin.settings.tier1FUA.value = formatNumberWithCommas(sortedTiers[0].fuaUpTo);
             DOMElements.admin.settings.tier1Fee.value = sortedTiers[0].fee;
@@ -644,14 +629,14 @@
             if(config.feeMode === 'manual') {
                 config.manualBaseFee = (parseFloat(DOMElements.inputs.manualBaseFee.value) || 0);
             }
-            localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
+            // This is the key change: REMOVED localStorage.setItem(...)
             setFeeModeUI(config.feeMode);
             calculateAndDisplay();
         });
         
         DOMElements.toggles.includeAce.addEventListener('change', (e) => {
             config.includeACE = e.target.checked;
-            localStorage.setItem('ascalonFeeCalcSettings', JSON.stringify(config));
+            // This is the key change: REMOVED localStorage.setItem(...)
             setAceUI(config.includeACE);
             calculateAndDisplay();
         });
@@ -661,7 +646,7 @@
         DOMElements.admin.password.loginBtn.addEventListener('click', handleLoginAttempt);
         DOMElements.admin.password.input.addEventListener('keyup', (e) => e.key === 'Enter' && handleLoginAttempt());
         DOMElements.admin.settings.saveBtn.addEventListener('click', saveSettings);
-        DOMElements.admin.settings.resetBtn.addEventListener('click', () => { if (confirm("Reset settings to default?")) { localStorage.removeItem('ascalonFeeCalcSettings'); config = { ...defaultConfig }; loadSettings(); saveSettings(); } });
+        DOMElements.admin.settings.resetBtn.addEventListener('click', () => { if (confirm("Reset settings to default?")) { /* Removed localStorage.removeItem */ config = { ...defaultConfig }; loadSettings(); saveSettings(); } });
         [DOMElements.admin.password.modal, DOMElements.admin.settings.modal].forEach(modal => modal.addEventListener('click', (e) => e.target === modal && closeModal(modal)));
 
         loadSettings();
